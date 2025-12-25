@@ -10,7 +10,7 @@ class TestTaskModel:
     def test_task_creation(self, app):
         """Test creating a Task instance."""
         with app.app_context():
-            task = Task(title='New Task', description='Task description')
+            task = Task(title='New Task', description='Task description', completed=False)
             
             assert task.title == 'New Task'
             assert task.description == 'Task description'
@@ -19,7 +19,11 @@ class TestTaskModel:
     def test_task_default_values(self, app):
         """Test default values for Task model."""
         with app.app_context():
+            from app.database import db
+            
             task = Task(title='Minimal Task')
+            db.session.add(task)
+            db.session.flush()  # This applies defaults
             
             assert task.description is None
             assert task.completed is False
@@ -27,7 +31,11 @@ class TestTaskModel:
     def test_task_to_dict(self, app):
         """Test converting Task to dictionary."""
         with app.app_context():
+            from app.database import db
+            
             task = Task(title='Dict Task', description='Test')
+            db.session.add(task)
+            db.session.flush()
             task.id = 1
             
             task_dict = task.to_dict()
